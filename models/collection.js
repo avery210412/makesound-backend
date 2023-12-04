@@ -9,6 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Collection.belongsTo(models.Playlist, { foreignKey: 'playlistId' });
+      Collection.belongsTo(models.Song, { foreignKey: 'songId' });
     }
   }
   Collection.init(

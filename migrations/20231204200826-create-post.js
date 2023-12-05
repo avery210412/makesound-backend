@@ -14,6 +14,10 @@ module.exports = {
         unique: true,
         type: Sequelize.INTEGER,
       },
+      user_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
       content: {
         allowNull: false,
         type: Sequelize.TEXT,

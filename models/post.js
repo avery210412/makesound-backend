@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       postId: DataTypes.INTEGER,
+      userId: DataTypes.INTEGER,
       content: DataTypes.TEXT,
     },
     {

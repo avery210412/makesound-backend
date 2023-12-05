@@ -14,6 +14,10 @@ module.exports = {
         unique: true,
         type: Sequelize.INTEGER,
       },
+      user_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
       title: {
         allowNull: false,
         type: Sequelize.STRING,

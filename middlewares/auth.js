@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const createError = require('http-errors');
 const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_KEY || 'test_key';
 const db = require('../models');
@@ -16,8 +17,8 @@ const setToken = (username) => {
 const checkToken = (req) => {
   if (!req.header('Authorization')) return;
   const token = req.header('Authorization').replace('Bearer ', '');
-  return jwt.verify(token, SECRET, (err, decoded) => {
-    if (err) return;
+  return jwt.verify(token, SECRET, (error, decoded) => {
+    if (error) return;
     return decoded.username;
   });
 };
@@ -25,30 +26,44 @@ const checkToken = (req) => {
 const checkAuth = (identity) => {
   return (req, res, next) => {
     const username = checkToken(req) || '';
-    if (!username) return res.status(400).json({ ok: 0, message: 'missing token' });
+    if (!username) {
+      return next(createError(400, 'Missing token'));
+    }
+
     User.findOne({
       where: {
         username,
       },
     })
       .then((user) => {
-        if (!user) return res.status(400).json({ ok: 0, message: 'User not found' });
-        req.user = user.dataValues;
+        if (!user) {
+          return next(createError(400, 'User not found'));
+        }
 
+        req.user = user.dataValues;
         switch (identity) {
           case 'isAdmin':
-            if (!req.user.role === 'admin') return res.status(400).json({ ok: 0, message: 'permission denied' });
+            if (!(req.user.role === 'admin')) {
+              return next(createError(400, 'Permission denied'));
+            }
+
             next();
             break;
           case 'isCreator':
-            if (!req.user.role === 'creator') return res.status(400).json({ ok: 0, message: 'permission denied' });
+            if (!(req.user.role === 'creator')) {
+              console.log('hello');
+              return next(createError(400, 'Permission denied'));
+            }
+
             next();
             break;
           default:
             next();
         }
       })
-      .catch((err) => res.status(500).json({ ok: 0, data: err }));
+      .catch((error) => {
+        return next(createError(500, error));
+      });
   };
 };
 

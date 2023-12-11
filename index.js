@@ -4,6 +4,7 @@ const express = require('express');
 const createError = require('http-errors');
 const errorHandler = require('./middlewares/errorHandler');
 const bodyParser = require('body-parser');
+const corsHandler = require('./middlewares/corsHandler');
 const userRoutes = require('./routes/users');
 const songRoutes = require('./routes/songs');
 const followRoutes = require('./routes/follows');
@@ -13,6 +14,8 @@ const port = process.env.PORT || 5001;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(corsHandler);
 
 app.use('/songs', express.static(__dirname + '/songs'));
 
